@@ -36,17 +36,19 @@ RAD Studio 12.2 has new CMake support for the Windows 64-bit Modern toolchain!  
 ## Current List of Build-Profiles
 | Profile Name | Branch | Description  | Stars |
 |---|---|---|---|
+| [curl](https://github.com/curl/curl) | `curl-8_13_0` | A command line tool and library for transferring data | 37.4k |
 | [spdlog](https://github.com/gabime/spdlog) | `v1.15.2` | Fast C++ logging library | 25.8k |
 | [zstd](https://github.com/facebook/zstd) | `v1.5.7` | Fast real-time compression algorithm | 24.7k |
 | [flatbuffers](https://github.com/google/flatbuffers) | `v25.2.10` | Google: Memory Efficient Serialization Library | 24k |
+| [fmt](https://github.com/fmtlib/fmt) | `11.1.4` | A modern formatting library | 21.6k |
 | [simdjson](https://github.com/simdjson/simdjson) | `v3.12.3` | Parsing gigabytes of JSON per second | 20k |
-| [abseil-cpp](https://github.com/abseil/abseil-cpp) | `20250127.1` | Google: Abseil Common Libraries | 15.7k |
 | [brotli](https://github.com/google/brotli) | `v1.1.0` | Google: Brotli compression format | 14k |
 | [ninja](https://github.com/ninja-build/ninja) | `master` | A small build system with a focus on speed | 11.8k |
 | [lz4](https://github.com/lz4/lz4) | `v1.10.0` | Extremely Fast Compression algorithm | 10.8k |
 | [jsoncpp](https://github.com/open-source-parsers/jsoncpp) | `1.9.6` | A C++ library for interacting with JSON | 8.5k |
 | [zlib](hhttps://github.com/madler/zlib) | `v1.3.1` | A massively spiffy yet delicately unobtrusive compression library | 6.1k |
 | [cnl](https://github.com/johnmcfarlane/cnl) | `v1.1.2` | A Compositional Numeric Library for C++ | 649 |
+
 
 
 ---
