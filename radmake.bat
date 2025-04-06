@@ -51,8 +51,10 @@ set "radmake_asmcompiler=%undefined_flag%"
 set "radmake_ccompiler=%undefined_flag%"
 set "radmake_cxxcompiler=%undefined_flag%"
 set "radmake_rsvarspath64=%undefined_flag%"
-set "radmake_log_level=0"
+set "radmake_log_debug=0"
+set "radmake_log_verbose=0"
 set "radmake_configversion=1"
+set "radmake_usecolors=1"
 
 
 
@@ -115,16 +117,24 @@ if /I "%arg%"=="--profile-folder" set "custom_profilefolder=%val%"
 
 if /I "%arg%"=="--help"        goto PrintUsage
 
+
+
 if /i "%arg%"=="--log-level" (
     if "%val%"=="quiet" (
-      set "radmake_log_level=0"
+      set "radmake_log_verbose=0"
+      set "radmake_log_debug=0"
     ) else if "%val%"=="verbose" (
       echo Log level = verbose
-      set "radmake_log_level=5"
+      set "radmake_log_verbose=1"
+      set "radmake_log_debug=0"
     ) else if "%val%"=="debug" (
       echo Log level = debug
-      set "radmake_log_level=10"
+      set "radmake_log_verbose=1"
+      set "radmake_log_debug=1"
     )
+)
+if /i "%arg%"=="--nocolor" (
+      set "radmake_usecolors=0"
 )
 
 shift
@@ -277,7 +287,7 @@ rem ----------------------------------------------------------------------------
 rem Optionally patch cloned source
 if exist "%radmake_patchbat%" (
     echo.
-    call :cecho 97 "Running PATCH script: !radmake_patchbat!"
+    call :cecho 93 "Running PATCH script: !radmake_patchbat!"
     call "%radmake_patchbat%" %radmake_repofolder%  || goto :END
 	echo.
 )
@@ -298,7 +308,7 @@ rem ----------------------------------------------------------------------------
 rem Optionally, load custom CMake_options and append to standard CMake options
 if exist "%radmake_cmaketxt%" (
   echo.  
-  call :cecho 97 "Loading custom CMake options from !radmake_cmaketxt!"
+  call :cecho 93 "Loading custom CMake options from !radmake_cmaketxt!"
   echo.
   for /f "usebackq tokens=* delims=" %%l in ("%radmake_cmaketxt%") do (
     set "line=%%l"
@@ -315,7 +325,7 @@ if exist "%radmake_cmaketxt%" (
 set "cmake_options=!cmake_options! !cmake_custom_options!"
 
 echo.
-call :cecho 1 "--- CMake options ---"
+call :cecho 93 "--- CMake options ---"
 echo !cmake_options!
 echo.
 
@@ -323,7 +333,7 @@ rem ----------------------------------------------------------------------------
 rem CMake configuration
 if not exist "%radmake_outputfolder%\" mkdir "%radmake_outputfolder%" || goto :END
 if not exist "%radmake_installfolder%\" mkdir "%radmake_installfolder%" || goto :END
-call :cecho 1 "--- Create Build environment with CMake/Ninja ---"
+call :cecho 93 "--- Create Build environment with CMake/Ninja ---"
 if not "%radmake_cmakelistpathinrepo%"=="" (
     call :verboselog "NOTE: profile has custom CMakeLists.txt path: %radmake_cmakelistpathinrepo%"
 )
@@ -333,27 +343,27 @@ echo.
 rem -------------------------------------------------------------------------------------------------------------------
 rem Optionally, allow for a prebuild action 
 if exist "%radmake_prebuildbat%" (
-    call :cecho 97 "Running PREBUILD script: !radmake_prebuildbat!" || goto :END
+    call :cecho 93 "Running PREBUILD script: !radmake_prebuildbat!" || goto :END
     call "%radmake_prebuildbat%" "%radmake_outputfolder%"
 	echo.
 )
 
 rem -------------------------------------------------------------------------------------------------------------------
 rem CMake build
-call :cecho 1 "--- Start Build ---"
+call :cecho 93 "--- Start Build ---"
 CMake --build "%radmake_outputfolder%" --config %radmake_buildtype% || goto :END
 echo.
 
 rem -------------------------------------------------------------------------------------------------------------------
 rem CMake install
-call :cecho 1 "--- Cmake Install Process ---"
+call :cecho 93 "--- CMake Install Process ---"
 CMake --install "%radmake_outputfolder%" --config %radmake_buildtype% || goto :END
 echo.
 
 rem -------------------------------------------------------------------------------------------------------------------
 rem Optionally, allow for a postinstall action
 if exist "%radmake_postinstallbat%" (
-	call :cecho 97 "Running POSTINSTALL script: !radmake_postinstallbat!"
+	call :cecho 93 "Running POSTINSTALL script: !radmake_postinstallbat!"
     call "%radmake_postinstallbat%" "%radmake_installfolder%" || goto :END
 	echo.
 )
@@ -375,16 +385,29 @@ rem Function Definitions
 rem -------------------------------------------------------------------------------------------------------------------
 
 
+:joinargs
+setlocal EnableDelayedExpansion
+set "radmaketemp_allargs="
+:loop
+if "%~1"=="" goto done
+set "radmaketemp_allargs=!radmaketemp_allargs! %~1"
+shift
+goto loop
+:done
+endlocal & set "radmaketemp_allargs=%radmaketemp_allargs:~1%" & exit /b
+
 rem -------------------------------------------------------------------------------------------------------------------
 :verboselog
-if not "%radmake_log_level%"=="5" goto :eof
-    echo [verbose] %*
+if not "%radmake_log_verbose%"=="1" goto :eof
+    call :joinargs %*
+    call :cecho 36 "[verbose] %radmaketemp_allargs%"
 rem )
 goto :eof
 
 :debuglog
-if not "%radmake_log_level%"=="10" goto :eof
-    echo [debug] %*
+if not "%radmake_log_debug%"=="1" goto :eof
+    call :joinargs %*
+    call :cecho 35 "[debug] %radmaketemp_allargs%"
 rem )
 goto :eof
 
@@ -393,6 +416,10 @@ goto :eof
 rem -------------------------------------------------------------------------------------------------------------------
 :highlightParam
 rem Usage: call :highlightParam "{value}" 96
+if "%radmake_usecolors%"=="0" (
+  <nul set /p="%~2"
+  goto :eof
+)
 setlocal EnableDelayedExpansion
 set "text=%~1"
 set "color=%~2"
@@ -405,6 +432,10 @@ endlocal & goto :eof
 rem -------------------------------------------------------------------------------------------------------------------
 :cecho
 rem Usage: call :cecho 33 "Some yellow text"
+if "%radmake_usecolors%"=="0" (
+  echo %~2
+  goto :eof
+)
 setlocal
 set "color=%~1"
 set "text=%~2"
@@ -458,7 +489,11 @@ setlocal EnableDelayedExpansion
 set "label=%~1"
 set "value=%~2"
 
-<nul set /p="!ESC![96m!label! !ESC![0m"
+if "%radmake_usecolors%"=="0" (
+  <nul set /p="!label! "
+) else (
+  <nul set /p="!ESC![96m!label! !ESC![0m"
+)
 if defined value (
     echo !value!
 ) else (
@@ -609,7 +644,7 @@ rem Refreshes or clones the repository into !radmake_repofolder!
 if exist "!radmake_repofolder!\\.git" (
     call :debuglog "Repo exists: !radmake_repofolder!"
     pushd "!radmake_repofolder!"
-    call :cecho 0 "Fetching latest changes..."
+    call :cecho 93 "Fetching latest changes..."
 
     call :debuglog "Clean submodules BEFORE fetching, in case old references are broken"
     git submodule deinit --all -f >nul 2>&1
@@ -644,7 +679,7 @@ if exist "!radmake_repofolder!\\.git" (
 )
 
 rem Else: repo doesn't exist, clone it
-call :cecho 96 "[radmake] Cloning repository..."
+call :cecho 93 "[radmake] Cloning repository..."
 
 set "is_remote_branch="
 set "is_remote_tag="
@@ -658,11 +693,11 @@ for /f %%T in ('git ls-remote --tags "%repo_uri%" "refs/tags/%radmake_branch%"')
 )
 
 if defined is_remote_branch (
-    call :cecho 93 "Detected remote branch: %radmake_branch%"
+    call :cecho 96 "Detected remote branch: %radmake_branch%"
     git clone --depth 1 --branch "%radmake_branch%" --single-branch "%repo_uri%" "%radmake_repofolder%" || goto :GIT_FAIL
     goto :GIT_DONE
 ) else if defined is_remote_tag (
-    call :cecho 93 "Detected remote tag: %radmake_branch%"
+    call :cecho 96 "Detected remote tag: %radmake_branch%"
     rem workaround for shallow-cloning tag
     git init "%radmake_repofolder%" || goto :GIT_FAIL
     pushd "%radmake_repofolder%"
@@ -732,7 +767,7 @@ if not exist "%iniFile%" (
     endlocal & exit /b 0
 )
 
-call :cecho 97 "Reading build profile: %iniFile%"
+call :cecho 93 "Reading build profile: %iniFile%"
 
 for /f "usebackq tokens=* delims=" %%a in ("%iniFile%") do (
     set "line=%%a"
@@ -773,7 +808,7 @@ for /f "usebackq tokens=* delims=" %%a in ("%iniFile%") do (
                             rem call set "!key!=%%value%%"
                             call set "!key!=!value!"
                         ) else (
-                            call :cecho 93 "[SKIP] Unknown key: !key!"
+                            call :cecho 91 "[SKIP] Unknown key: !key!"
                         )
                     ) else (
                         if defined keyexists (
@@ -782,8 +817,6 @@ for /f "usebackq tokens=* delims=" %%a in ("%iniFile%") do (
                             call :verboselog "[SKIP] Unknown key with empty value: !key!"
                         )
                     )
-                ) else (
-                    call :cecho 93 "[SKIP] Empty key name in INI line"
                 )
             )
         )
