@@ -1,0 +1,3 @@
+-DCMAKE_CXX_FLAGS=-Wno-undef
+-DCMAKE_CXX_FLAGS=-Wno-unknown-pragmas
+-DCMAKE_CXX_FLAGS=-Wno-shadow
