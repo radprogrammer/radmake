@@ -1,2 +1,0 @@
--Dgtest_build_tests=ON
--Dgtest_build_samples=ON
