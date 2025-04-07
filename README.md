@@ -42,6 +42,7 @@ RAD Studio 12.2 has new CMake support for the Windows 64-bit Modern toolchain!  
 | [flatbuffers](https://github.com/google/flatbuffers) | `v25.2.10` | Google: Memory Efficient Serialization Library | 24k |
 | [fmt](https://github.com/fmtlib/fmt) | `11.1.4` | A modern formatting library | 21.6k |
 | [simdjson](https://github.com/simdjson/simdjson) | `v3.12.3` | Parsing gigabytes of JSON per second | 20k |
+| [Catch2](https://github.com/catchorg/Catch2) | `v3.8.0` | A modern, C++-native, test framework for unit-tests | 19.2k |
 | [brotli](https://github.com/google/brotli) | `v1.1.0` | Google: Brotli compression format | 14k |
 | [ninja](https://github.com/ninja-build/ninja) | `master` | A small build system with a focus on speed | 11.8k |
 | [lz4](https://github.com/lz4/lz4) | `v1.10.0` | Extremely Fast Compression algorithm | 10.8k |
