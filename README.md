@@ -46,6 +46,7 @@ RAD Studio 12.2 has new CMake support for the Windows 64-bit Modern toolchain!  
 | [brotli](https://github.com/google/brotli) | `v1.1.0` | Google: Brotli compression format | 14k |
 | [ninja](https://github.com/ninja-build/ninja) | `master` | A small build system with a focus on speed | 11.8k |
 | [lz4](https://github.com/lz4/lz4) | `v1.10.0` | Extremely Fast Compression algorithm | 10.8k |
+| [libgit2](https://github.com/libgit2/libgit2) | `v1.9.0` | Cross-platform, linkable library implementation of Git  | 9.9k |
 | [jsoncpp](https://github.com/open-source-parsers/jsoncpp) | `1.9.6` | A C++ library for interacting with JSON | 8.5k |
 | [zlib](hhttps://github.com/madler/zlib) | `v1.3.1` | A massively spiffy yet delicately unobtrusive compression library | 6.1k |
 | [cnl](https://github.com/johnmcfarlane/cnl) | `v1.1.2` | A Compositional Numeric Library for C++ | 649 |

@@ -1,0 +1,66 @@
+#some references:
+#  https://bvisness.me/libgit2/
+#  https://registry.build/github/libgit2/libgit2@1.8.2/
+
+#Fixes inline functions in headers without linker errors (HandleToULong, ULongToHandle, etc)
+#-DCMAKE_C_STANDARD=99
+#keep eye on _Thread_local and _Atomic (may not map well across language boundaries)
+#roll back to 99 if needed
+-DCMAKE_C_STANDARD=17
+
+
+# Disable CLAR test framework (internal libgit2 tests); not needed for DLL builds
+-DBUILD_CLAR=OFF
+
+# Disable internal unit tests to speed up build and reduce dependencies
+-DBUILD_TESTS=OFF
+
+# Skip building bundled examples; not needed for embedding DLL
+-DBUILD_EXAMPLES=OFF
+
+# Disable fuzzers (used for security testing) to streamline build
+-DBUILD_FUZZERS=OFF
+
+# Disable building of CLI tool since we’re building a DLL, not a command-line utility
+-DBUILD_CLI=FALSE
+
+# Enable threading support for thread-safe operations in libgit2 (defaults to ON)
+-DUSE_THREADS=ON
+
+# Disable SSH backend to simplify build; not needed for HTTPS-only usage
+-DUSE_SSH=OFF
+
+# Fail on deprecated API usage; helps clean up legacy code
+-DDEPRECATE_HARD=ON
+
+# Disable nanosecond file timestamp support; bcc64x lacks `st_mtim`
+-DUSE_NSEC=OFF
+
+# Disable POSIX `futimens` support which isn’t available on Windows
+-DHAVE_FUTIMENS=OFF
+
+# Use built-in regex backend to avoid linking against PCRE or other external regex engines
+-DREGEX_BACKEND=builtin
+
+# Disable iconv to avoid encoding conversion dependency (not needed for UTF-8-only use cases)
+-DUSE_ICONV=OFF
+
+
+#WinHTTP fails on missing dlltool
+#Note: provided auto-proxy/redirects support
+#-DUSE_HTTPS=WinHTTP
+# Use native Windows TLS stack (Schannel) for HTTPS without external libraries or dlltool
+-DUSE_HTTPS=Schannel
+
+# Avoid OpenSSL dependency since Schannel provides native HTTPS support
+-DUSE_OPENSSL=NO
+
+# Use Windows SSPI for NTLM/Kerberos-style authentication over HTTPS (when needed)
+-DUSE_AUTH_NEGOTIATE=win32
+
+# Enable C compiler extensions like `__inline__` and mixed declarations — required by libgit2 with bcc64x
+-DC_EXTENSIONS=ON
+
+# Use bundled zlib to avoid requiring system-wide or prebuilt zlib libraries
+-DUSE_BUNDLED_ZLIB=ON
+
